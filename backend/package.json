@@ -1,0 +1,42 @@
+{
+  "name": "farming-coop-backend",
+  "version": "1.0.0",
+  "description": "Backend for Cooperative Farming Management Platform",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "jest",
+    "db:migrate": "sequelize db:migrate",
+    "db:seed": "sequelize db:seed:all",
+    "db:reset": "sequelize db:drop && sequelize db:create && sequelize db:migrate && sequelize db:seed:all"
+  },
+  "keywords": [
+    "farming",
+    "cooperative",
+    "management",
+    "agriculture"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-async-errors": "^3.1.1",
+    "helmet": "^7.0.0",
+    "joi": "^17.9.1",
+    "jsonwebtoken": "^9.0.0",
+    "pg": "^8.10.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.33.0"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "nodemon": "^3.1.11",
+    "sequelize-cli": "^6.6.2",
+    "supertest": "^6.3.3"
+  }
+}
