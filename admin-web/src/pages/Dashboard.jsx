@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Grid, Card, CardContent, Typography, Box, Paper, Avatar, LinearProgress, Button, Chip, Container } from '@mui/material';
 import { 
   People, 
@@ -33,6 +34,7 @@ import { getSales } from '../services/saleService';
 import { getDistributions } from '../services/distributionService';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState({
     members: [],
     plots: [],
@@ -408,7 +410,7 @@ const Dashboard = () => {
                   fullWidth
                   variant="contained"
                   startIcon={action.icon}
-                  onClick={() => window.location.href = action.path}
+                  onClick={() => navigate(action.path)}
                   sx={{
                     p: 1,
                     height: 60,

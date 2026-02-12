@@ -93,14 +93,14 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 
 // Protected API Routes with authentication
-app.use('/api/members', memberRoutes);
-app.use('/api/plots', plotRoutes);
-app.use('/api/harvests', harvestRoutes);
-app.use('/api/equipment', equipmentRoutes);
-app.use('/api/bookings', equipmentBookingRoutes);
-app.use('/api/expenses', sharedExpenseRoutes);
-app.use('/api/sales', saleRoutes);
-app.use('/api/distributions', profitDistributionRoutes);
+app.use('/api/members', authMiddleware, memberRoutes);
+app.use('/api/plots', authMiddleware, plotRoutes);
+app.use('/api/harvests', authMiddleware, harvestRoutes);
+app.use('/api/equipment', authMiddleware, equipmentRoutes);
+app.use('/api/bookings', authMiddleware, equipmentBookingRoutes);
+app.use('/api/expenses', authMiddleware, sharedExpenseRoutes);
+app.use('/api/sales', authMiddleware, saleRoutes);
+app.use('/api/distributions', authMiddleware, profitDistributionRoutes);
 
 // Root endpoint
 app.get('/api', (req, res) => {
