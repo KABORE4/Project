@@ -55,6 +55,29 @@ app.use((req, res, next) => {
   next();
 });
 
+// Root endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Cooperative Farming Management Platform API',
+    version: '1.0.0',
+    database: 'PostgreSQL',
+    authentication: 'JWT',
+    endpoints: {
+      auth: '/api/auth',
+      members: '/api/members',
+      plots: '/api/plots',
+      harvests: '/api/harvests',
+      equipment: '/api/equipment',
+      bookings: '/api/bookings',
+      expenses: '/api/expenses',
+      sales: '/api/sales',
+      distributions: '/api/distributions',
+      health: '/api/health'
+    }
+  });
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.status(200).json({
