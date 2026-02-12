@@ -1,7 +1,11 @@
 import axios from 'axios';
 
+const API_BASE_URL = import.meta.env.PROD 
+  ? 'https://project-9cko.onrender.com/api'
+  : '/api';
+
 const api = axios.create({
-  baseURL: 'https://project-9cko.onrender.com/api',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -44,7 +48,9 @@ api.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem('refreshToken');
         if (refreshToken) {
-          const response = await axios.post('https://project-9cko.onrender.com/api/auth/refresh-token', {
+          const response = await axios.post(import.meta.env.PROD 
+          ? 'https://project-9cko.onrender.com/api/auth/refresh-token'
+          : '/api/auth/refresh-token', {
             refreshToken
           }, {
             withCredentials: true
