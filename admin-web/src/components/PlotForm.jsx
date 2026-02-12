@@ -125,10 +125,13 @@ const PlotForm = ({ plot, onSuccess, onCancel }) => {
 
     setLoading(true);
     try {
+      // Create clean data object to avoid XrayWrapper issues
+      const cleanFormData = JSON.parse(JSON.stringify(formData));
+      
       if (plot) {
-        await updatePlot(plot.id, formData);
+        await updatePlot(plot.id, cleanFormData);
       } else {
-        await createPlot(formData);
+        await createPlot(cleanFormData);
       }
       onSuccess();
     } catch (error) {

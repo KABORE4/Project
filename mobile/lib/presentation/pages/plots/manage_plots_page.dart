@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'plot_details_page.dart';
 
 class ManagePlotsPage extends StatefulWidget {
   const ManagePlotsPage({super.key});
@@ -137,76 +138,14 @@ class _ManagePlotsPageState extends State<ManagePlotsPage> {
   }
 
   void _showPlotDetails(Map<String, dynamic> plot) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(plot['name'].toString()),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildDetailRow('Size', '${plot['size']} ha'),
-              _buildDetailRow('Location', plot['location'].toString()),
-              _buildDetailRow('Soil Type', plot['soilType'].toString()),
-              _buildDetailRow('Current Crop', plot['crop'].toString()),
-              _buildDetailRow('Status', plot['status'].toString()),
-              _buildDetailRow('Last Planted', plot['lastPlanted'].toString()),
-              _buildDetailRow('Expected Harvest', plot['expectedHarvest'].toString()),
-              const SizedBox(height: 16),
-              const Text(
-                'Notes:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(plot['notes'].toString()),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Edit feature coming soon!'),
-                  backgroundColor: Colors.blue,
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Edit'),
-          ),
-        ],
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => PlotDetailsPage(plot: plot),
       ),
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 100,
-            child: Text(
-              '$label:',
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-          ),
-          Expanded(child: Text(value)),
-        ],
-      ),
-    );
-  }
-
+  
   @override
   Widget build(BuildContext context) {
     final plots = [

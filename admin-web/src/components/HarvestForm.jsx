@@ -104,10 +104,13 @@ const HarvestForm = ({ harvest, onSuccess, onCancel }) => {
 
     setLoading(true);
     try {
+      // Create clean data object to avoid XrayWrapper issues
+      const cleanFormData = JSON.parse(JSON.stringify(formData));
+      
       if (harvest) {
-        await updateHarvest(harvest.id, formData);
+        await updateHarvest(harvest.id, cleanFormData);
       } else {
-        await createHarvest(formData);
+        await createHarvest(cleanFormData);
       }
       onSuccess();
     } catch (error) {

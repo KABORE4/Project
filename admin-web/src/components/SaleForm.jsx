@@ -100,7 +100,9 @@ const SaleForm = ({ sale, onSave, onCancel }) => {
     setLoading(true);
 
     try {
-      await onSave(formData);
+      // Create clean data object to avoid XrayWrapper issues
+      const cleanFormData = JSON.parse(JSON.stringify(formData));
+      await onSave(cleanFormData);
     } catch (error) {
       console.error('Error saving sale:', error);
     } finally {

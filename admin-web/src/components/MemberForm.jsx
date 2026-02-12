@@ -102,13 +102,21 @@ const MemberForm = ({ member, onSuccess, onCancel }) => {
     setLoading(true);
     try {
       const dataToSubmit = { ...formData };
+      
+      // Create clean data object to avoid XrayWrapper issues
+      const cleanDataToSubmit = JSON.parse(JSON.stringify(dataToSubmit));
+      
       if (member) {
-        delete dataToSubmit.password;
-        const result = await updateMember(member.id, dataToSubmit);
-        onSuccess(result); // Pass updated data back
+        delete cleanDataToSubmit.password;
+        const result = await updateMember(member.id, cleanDataToSubmit);
+        // Clean the result before passing back
+        const cleanResult = JSON.parse(JSON.stringify(result));
+        onSuccess(cleanResult); // Pass updated data back
       } else {
-        const result = await createMember(dataToSubmit);
-        onSuccess(result); // Pass new member data back
+        const result = await createMember(cleanDataToSubmit);
+        // Clean the result before passing back
+        const cleanResult = JSON.parse(JSON.stringify(result));
+        onSuccess(cleanResult); // Pass new member data back
       }
     } catch (error) {
       console.error('Error saving member:', error);

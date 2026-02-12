@@ -101,8 +101,10 @@ const DistributionForm = ({ distribution, onSave, onCancel }) => {
     setLoading(true);
 
     try {
-      console.log('Submitting distribution data:', formData);
-      await onSave(formData);
+      // Create clean data object to avoid XrayWrapper issues
+      const cleanFormData = JSON.parse(JSON.stringify(formData));
+      console.log('Submitting distribution data:', cleanFormData);
+      await onSave(cleanFormData);
     } catch (error) {
       console.error('Error saving distribution:', error);
     } finally {

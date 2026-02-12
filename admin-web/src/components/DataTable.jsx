@@ -15,7 +15,7 @@ import {
   Typography,
   Button,
 } from '@mui/material';
-import { Edit, Delete, Search, Add } from '@mui/icons-material';
+import { Edit, Delete, Search, Add, Block, CheckCircle } from '@mui/icons-material';
 
 const DataTable = ({
   title,
@@ -31,16 +31,17 @@ const DataTable = ({
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredData = (Array.isArray(data) ? data : []).filter((item) =>
-    columns.some((column) =>
-      String(item[column.field] || '').toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    columns.some((column) => {
+      const value = item[column.field];
+      return String(value || '').toLowerCase().includes(searchTerm.toLowerCase());
+    })
   );
 
   const renderCellValue = (item, column) => {
     const value = item[column.field];
 
-    if (column.render) {
-      return column.render(value, item);
+    if (column.renderCell) {
+      return column.renderCell({ value, row: item });
     }
 
     if (column.type === 'status') {
@@ -103,17 +104,49 @@ const DataTable = ({
         sx={{ mb: 2 }}
       />
 
-      <TableContainer component={Paper}>
-        <Table>
+      <TableContainer component={Paper} sx={{ 
+        maxHeight: 'calc(100vh - 250px)', 
+        overflow: 'auto',
+        width: '100%',
+        '&::-webkit-scrollbar': {
+          height: '6px',
+          width: '6px',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: '#f1f1f1',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: '#888',
+          borderRadius: '3px',
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+          background: '#555',
+        }
+      }}>
+        <Table stickyHeader size="small" sx={{ 
+          width: '100%',
+          tableLayout: 'fixed'
+        }}>
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <TableCell key={column.field} sx={{ fontWeight: 'bold' }}>
+                <TableCell 
+                  key={column.field} 
+                  sx={{ 
+                    fontWeight: 'bold', 
+                    width: column.width || '100px',
+                    fontSize: '0.875rem',
+                    padding: '8px 12px',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}
+                >
                   {column.headerName}
                 </TableCell>
               ))}
               {(onEdit || onDelete) && (
-                <TableCell sx={{ fontWeight: 'bold' }}>Actions</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', width: '120px', fontSize: '0.875rem', padding: '8px 12px' }}>Actions</TableCell>
               )}
             </TableRow>
           </TableHead>
@@ -132,30 +165,55 @@ const DataTable = ({
               </TableRow>
             ) : (
               filteredData.map((item) => (
-                <TableRow key={item.id}>
+                <TableRow key={item.id || item._id}>
                   {columns.map((column) => (
-                    <TableCell key={column.field}>
+                    <TableCell 
+                      key={column.field}
+                      sx={{ 
+                        width: column.width || '100px',
+                        fontSize: '0.875rem',
+                        padding: '8px 12px',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}
+                    >
                       {renderCellValue(item, column)}
                     </TableCell>
                   ))}
                   {(onEdit || onDelete) && (
-                    <TableCell>
+                    <TableCell sx={{ width: '120px', padding: '8px 12px' }}>
                       {onEdit && (
                         <IconButton
                           color="primary"
                           onClick={() => onEdit(item)}
                           size="small"
+                          sx={{ padding: '4px' }}
                         >
-                          <Edit />
+                          <Edit fontSize="small" />
                         </IconButton>
                       )}
                       {onDelete && (
                         <IconButton
-                          color="error"
-                          onClick={() => onDelete(item)}
+                          color={item.status === 'active' ? 'success' : 'warning'}
+                          onClick={() => {
+                            // Créer une copie propre pour éviter XrayWrapper
+                            console.log('Current item status:', item.status); // Debug
+                            const cleanItem = JSON.parse(JSON.stringify(item));
+                            const newStatus = cleanItem.status === 'active' ? 'inactive' : 'active';
+                            console.log('New status will be:', newStatus); // Debug
+                            const updatedItem = {
+                              ...cleanItem,
+                              status: newStatus
+                            };
+                            console.log('Calling onDelete with:', updatedItem); // Debug
+                            onDelete(updatedItem);
+                          }}
                           size="small"
+                          title={item.status === 'active' ? 'Disable Member' : 'Enable Member'}
+                          sx={{ padding: '4px' }}
                         >
-                          <Delete />
+                          {item.status === 'active' ? <CheckCircle fontSize="small" /> : <Block fontSize="small" />}
                         </IconButton>
                       )}
                     </TableCell>

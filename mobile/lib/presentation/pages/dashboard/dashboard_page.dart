@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
-import '../harvest/add_harvest_page.dart';
 import '../equipment/book_equipment_page.dart';
-import '../plots/manage_plots_page.dart';
-import '../reports/view_reports_page.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -169,7 +166,7 @@ class DashboardPage extends StatelessWidget {
               
               const SizedBox(height: 30),
               
-              // Enhanced Quick Actions Section
+              // Quick Actions Section
               const Text(
                 'Quick Actions',
                 style: TextStyle(
@@ -180,51 +177,43 @@ class DashboardPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               
-              GridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-                childAspectRatio: 2.8,
-                children: [
-                  _buildQuickActionCard(
-                    'Add Harvest',
-                    Icons.agriculture,
-                    const Color(0xFF4CAF50),
-                    () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const AddHarvestPage()),
+              // Use SingleChildScrollView to prevent overflow
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildQuickActionCard(
+                      'Add Harvest',
+                      Icons.agriculture,
+                      const Color(0xFF4CAF50),
+                      () => Navigator.pushNamed(context, '/add-harvest'),
                     ),
-                  ),
-                  _buildQuickActionCard(
-                    'Book Equipment',
-                    Icons.agriculture_outlined,
-                    const Color(0xFFFF9800),
-                    () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const BookEquipmentPage()),
+                    const SizedBox(width: 8),
+                    _buildQuickActionCard(
+                      'Book Equipment',
+                      Icons.agriculture_outlined,
+                      const Color(0xFFFF9800),
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const BookEquipmentPage()),
+                      ),
                     ),
-                  ),
-                  _buildQuickActionCard(
-                    'Manage Plots',
-                    Icons.landscape,
-                    const Color(0xFF2196F3),
-                    () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const ManagePlotsPage()),
+                    const SizedBox(width: 8),
+                    _buildQuickActionCard(
+                      'Manage Plots',
+                      Icons.landscape,
+                      const Color(0xFF2196F3),
+                      () => Navigator.pushNamed(context, '/manage-plots'),
                     ),
-                  ),
-                  _buildQuickActionCard(
-                    'View Reports',
-                    Icons.analytics,
-                    const Color(0xFF9C27B0),
-                    () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const ViewReportsPage()),
+                    const SizedBox(width: 8),
+                    _buildQuickActionCard(
+                      'View Reports',
+                      Icons.assessment,
+                      const Color(0xFF9C27B0),
+                      () => Navigator.pushNamed(context, '/view-reports'),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               
               const SizedBox(height: 30),

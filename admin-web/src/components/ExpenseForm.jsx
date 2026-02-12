@@ -14,7 +14,7 @@ import {
 
 const ExpenseForm = ({ expense, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
-    expenseCode: '',
+    expenseCode: '', // Empty for auto-generation
     category: '',
     description: '',
     amount: '',
@@ -98,9 +98,24 @@ const ExpenseForm = ({ expense, onSave, onCancel }) => {
         ...formData,
         amount: parseFloat(formData.amount),
       };
-      await onSave(expenseData);
+      
+      // Create clean data object to avoid XrayWrapper issues
+      const cleanExpenseData = JSON.parse(JSON.stringify(expenseData));
+      
+      // Remove fields that shouldn't be sent to backend for new expenses
+      if (!expense) {
+        delete cleanExpenseData._id;
+        delete cleanExpenseData.expenseCode; // Let backend generate it
+      }
+      
+      console.log('Submitting expense data:', cleanExpenseData);
+      const result = await onSave(cleanExpenseData);
+      // Clean the result if needed
+      const cleanResult = result ? JSON.parse(JSON.stringify(result)) : null;
+      return cleanResult;
     } catch (error) {
       console.error('Error saving expense:', error);
+      setErrors({ submit: error.response?.data?.message || 'An error occurred' });
     } finally {
       setLoading(false);
     }
@@ -128,7 +143,7 @@ const ExpenseForm = ({ expense, onSave, onCancel }) => {
             value={formData.expenseCode}
             onChange={handleChange}
             disabled={!!expense}
-            helperText={expense ? "Auto-generated for new expenses" : ""}
+            helperText={expense ? "Auto-generated for new expenses" : "Leave empty for auto-generation"}
           />
         </Grid>
 

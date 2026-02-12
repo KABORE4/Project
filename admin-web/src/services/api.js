@@ -5,16 +5,17 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,
 });
 
-// Add request interceptor for auth if needed later
+// Add request interceptor for auth
 api.interceptors.request.use(
   (config) => {
     // Add auth token if available
-    // const token = localStorage.getItem('token');
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {
@@ -22,12 +23,55 @@ api.interceptors.request.use(
   }
 );
 
-// Add response interceptor for error handling
+// Add response interceptor for error handling and token refresh
 api.interceptors.response.use(
   (response) => {
+    // Clean response data to avoid XrayWrapper issues
+    if (response.data) {
+      return {
+        ...response,
+        data: JSON.parse(JSON.stringify(response.data))
+      };
+    }
     return response;
   },
-  (error) => {
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (refreshToken) {
+          const response = await axios.post('http://localhost:5000/api/auth/refresh-token', {
+            refreshToken
+          }, {
+            withCredentials: true
+          });
+
+          const { token: newToken } = response.data;
+          localStorage.setItem('token', newToken);
+          
+          // Retry original request with new token
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          return api(originalRequest);
+        } else {
+          // No refresh token, redirect to login
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
+        }
+      } catch (refreshError) {
+        // Refresh failed, logout user
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
+    }
+
     console.error('API Error:', error);
     return Promise.reject(error);
   }
