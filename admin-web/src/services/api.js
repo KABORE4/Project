@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: 'https://project-9cko.onrender.com/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -44,7 +44,7 @@ api.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem('refreshToken');
         if (refreshToken) {
-          const response = await axios.post('http://localhost:5000/api/auth/refresh-token', {
+          const response = await axios.post('https://project-9cko.onrender.com/api/auth/refresh-token', {
             refreshToken
           }, {
             withCredentials: true
